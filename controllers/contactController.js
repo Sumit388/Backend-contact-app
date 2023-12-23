@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactModels");
+
 //@desc Get all contacts
 //@route GET /api/contacts
 //@access public
@@ -64,12 +65,10 @@ const deleteSingleContacts = asyncHandler(async (req, res) => {
   const deletedContact = await Contact.findByIdAndDelete(req.params.id, {
     new: true,
   });
-  res
-    .status(200)
-    .json({
-      message: `delete single contact details for ${req.params.id}`,
-      data: deletedContact,
-    });
+  res.status(200).json({
+    message: `delete single contact details for ${req.params.id}`,
+    data: deletedContact,
+  });
 });
 
 //@desc Add new contacts
@@ -83,7 +82,7 @@ const addNewContact = asyncHandler(async (req, res) => {
     throw new Error("All fields are mandatory!");
   } else {
     await Contact.create(req.body);
-    res.status(200).json({
+    res.status(201).json({
       message: "add new contact deatils",
     });
   }
