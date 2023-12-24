@@ -44,19 +44,17 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("All fields are mandatory");
   }
   const fetchedUser = await User.findOne({ email });
-  //   console.log(fetchedUser)
-  //   const hashedPassword = await bycrypt.hash(password, 10);
   if (fetchedUser && (await bycrypt.compare(password, fetchedUser.password))) {
     const token = jwt.sign(
       {
         user: {
-          userName: fetchedUser.name,
-          userId: fetchedUser.id,
+          name: fetchedUser.name,
+          id: fetchedUser.id,
           email: fetchedUser.email,
         },
       },
       process.env.SECERET_KEY,
-      { expiresIn: "1m" }
+      { expiresIn: "60m" }
     );
     res.status(200).json({ auth_token: token });
   } else {
@@ -66,7 +64,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const getUserDetails = asyncHandler(async (req, res) => {
-  res.status(200).json({ mesaage: "User details fetched successfully" });
+  res.status(200).json({ mesaage: "User details fetched successfully", data:req.user });
 });
 
 module.exports = {

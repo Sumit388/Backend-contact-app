@@ -3,9 +3,9 @@ const Contact = require("../models/contactModels");
 
 //@desc Get all contacts
 //@route GET /api/contacts
-//@access public
+//@access private
 const getContacts = asyncHandler(async (req, res) => {
-  const allContacts = await Contact.find();
+  const allContacts = await Contact.find({ user_id: req.user.id });
   res.status(200).json({
     message: "get all contacts",
     count: allContacts.length,
@@ -15,10 +15,10 @@ const getContacts = asyncHandler(async (req, res) => {
 
 //@desc Get individual contacts
 //@route GET /api/contacts/:id
-//@access public
+//@access private
 const getSingleContacts = asyncHandler(async (req, res) => {
   const indContact = await Contact.findById(req.params.id);
-  if (!indContact) {
+  if (!indContact || indContact.user_id != req.user.id) {
     res.status(404);
     throw new Error("No contacts found");
   }
@@ -30,10 +30,10 @@ const getSingleContacts = asyncHandler(async (req, res) => {
 
 //@desc Update individual contacts
 //@route PUT /api/contacts/:id
-//@access public
+//@access private
 const updateSingleContacts = asyncHandler(async (req, res) => {
   const indContact = await Contact.findById(req.params.id);
-  if (!indContact) {
+  if (!indContact || indContact.user_id != req.user.id) {
     res.status(404);
     throw new Error("No contacts found");
   }
@@ -55,10 +55,10 @@ const updateSingleContacts = asyncHandler(async (req, res) => {
 
 //@desc Delete individual contacts
 //@route DELETE /api/contacts/:id
-//@access public
+//@access private
 const deleteSingleContacts = asyncHandler(async (req, res) => {
   const indContact = await Contact.findById(req.params.id);
-  if (!indContact) {
+  if (!indContact || indContact.user_id != req.user.id) {
     res.status(404);
     throw new Error("No contacts found");
   }
@@ -73,7 +73,7 @@ const deleteSingleContacts = asyncHandler(async (req, res) => {
 
 //@desc Add new contacts
 //@route POST /api/contacts
-//@access public
+//@access private
 const addNewContact = asyncHandler(async (req, res) => {
   const { name, email, phone } = req.body;
 
@@ -81,7 +81,7 @@ const addNewContact = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("All fields are mandatory!");
   } else {
-    await Contact.create(req.body);
+    await Contact.create({ name, email, phone, user_id: req.user.id });
     res.status(201).json({
       message: "add new contact deatils",
     });

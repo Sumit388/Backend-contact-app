@@ -26,6 +26,8 @@ const errorHandler = (err, req, res, next) => {
     stackTrace: err.stack,
     statusCode: statusCode,
   });
+
+  next();
 };
 
 module.exports = errorHandler;
